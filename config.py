@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 from dotenv import load_dotenv
 import os
 
@@ -12,7 +12,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
 def get_db_connection():
-    return mysql.connector.connect(
+    return pymysql.connector.connect(
         host=DB_HOST,
         user=DB_USER,
         password=DB_PASSWORD,
