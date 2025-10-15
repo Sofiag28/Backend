@@ -4,7 +4,7 @@ from flask_mail import Mail
 from itsdangerous import URLSafeTimedSerializer
 from Controllers.integracion_controller import integracion_bp
 from config import get_db_connection, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
-import mysql.connector
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '1234567'
