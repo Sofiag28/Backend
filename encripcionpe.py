@@ -1,11 +1,11 @@
 import bcrypt
 from config import get_db_connection, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, current_app, conf
-import mysql.connector
+import pymysql
 
 # 🔹 Conexión a la base de datos
 def get_db_connection():
     conf = current_app.config["DB_CONNECTION_CONFIG"]
-    return mysql.connector.connect(
+    return pymysql.connector.connect(
         host=DB_HOST,
         user=DB_USER,
         password=DB_PASSWORD,

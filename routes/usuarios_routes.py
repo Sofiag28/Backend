@@ -12,32 +12,7 @@ def listar_usuarios():
     usuarios = cursor.fetchall()
     return jsonify(usuarios), 200
 
-# CREAR un nuevo usuario
-@usuarios_bp.route("/crear", methods=["POST"])
-def crear_usuario():
-    db = current_app.config['DB_CONNECTION']
-    cursor = db.cursor()
-    data = request.json
 
-    # Validación básica
-    if not data.get("username") or not data.get("contraseña") or not data.get("rol"):
-        return jsonify({"error": "Username, contraseña y rol son obligatorios"}), 400
-
-    contrasena_hash = generate_password_hash(data.get("contraseña"))
-    
-    cursor.execute(
-        """
-        INSERT INTO usuarios(username, contraseña, rol) 
-        VALUES (%s, %s, %s)
-        """,
-        (
-            data.get("username"),
-            contrasena_hash,
-            data.get("rol")
-        )
-    )
-    db.commit()
-    return jsonify({"mensaje": "Usuario registrado correctamente"}), 201
 
 # ACTUALIZAR un usuario@usuarios_bp.route("/actualizar/<int:id>", methods=["PUT"])
 @usuarios_bp.route("/actualizar/<int:id>", methods=["PUT"])

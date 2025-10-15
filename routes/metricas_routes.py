@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, current_app
 
 metricas_bp = Blueprint("metricas", __name__, url_prefix="/metricas")
 
-@metricas_bp.route("/", methods=["GET"])
+@metricas_bp.route("/listar", methods=["GET"])
 def metricas():
     db = current_app.config['DB_CONNECTION']
     cursor = db.cursor(dictionary=True)

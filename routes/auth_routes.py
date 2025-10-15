@@ -2,7 +2,6 @@ from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from Controllers.auth import crear_token,login_usuario
 from datetime import datetime
-import mysql.connector
 from config import get_db_connection
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
