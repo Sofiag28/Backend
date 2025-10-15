@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_mail import Mail
 from itsdangerous import URLSafeTimedSerializer
 from Controllers.integracion_controller import integracion_bp
-from config import get_db_connection, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB
+from config import get_db_connection, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
 import mysql.connector
 
 app = Flask(__name__)
@@ -13,10 +13,11 @@ app.config['SECRET_KEY'] = '1234567'
 # 🔹 Configuración MySQL
 # ===========================
 app.config['DB_CONNECTION_CONFIG'] = {
-    "host": MYSQL_HOST,
-    "user": MYSQL_USER,
-    "password": MYSQL_PASSWORD,
-    "database": MYSQL_DB
+    'host': DB_HOST,
+    'user': DB_USER,
+    'password': DB_PASSWORD,
+    'database': DB_NAME,
+    'port':DB_PORT
 }
 
 # ✅ Creamos y guardamos la conexión global
@@ -71,7 +72,7 @@ app.register_blueprint(tareas_bp)
 # ===========================
 # 🔹 Ejecutar servidor
 # ===========================
-if _name_ == "_main_":
+if __name__ == "_main_":
     import os
     port = int(os.environ.get("PORT", 5000))  # Render asigna un puerto
     app.run(host="0.0.0.0", port=port, debug=True)
