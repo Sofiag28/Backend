@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app
-import mysql.connector
-
+from config import get_db_connection, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
+import pymysql
 admin_bp = Blueprint("admin", __name__)
 
 # ===========================
@@ -8,12 +8,14 @@ admin_bp = Blueprint("admin", __name__)
 # ===========================
 def get_db_connection():
     conf = current_app.config["DB_CONNECTION_CONFIG"]
-    return mysql.connector.connect(
-        host=conf["host"],
-        user=conf["user"],
-        password=conf["password"],
-        database=conf["database"]
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        port=DB_PORT
     )
+
 
 # ===========================
 # 🔹 Listar usuarios

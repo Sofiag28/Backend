@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, current_app, request
-import mysql.connector
+from config import get_db_connection, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
+import pymysql
 from datetime import datetime
 
 tareas_bp = Blueprint("tareas_bp", __name__)
@@ -7,15 +8,16 @@ tareas_bp = Blueprint("tareas_bp", __name__)
 # ===========================
 # 🔹 Función para conexión MySQL
 # ===========================
-def get_db_connection():
-    conf = current_app.config['DB_CONNECTION_CONFIG']
-    return mysql.connector.connect(
-        host=conf['host'],
-        user=conf['user'],
-        password=conf['password'],
-        database=conf['database']
-    )
 
+def get_db_connection():
+    conf = current_app.config["DB_CONNECTION_CONFIG"]
+    return pymysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        port=DB_PORT
+    )
 
 # ===========================
 # 🔹 Obtener todas las tareas asignadas a un estudiante (incluye estado en tareas_estudiantes)
