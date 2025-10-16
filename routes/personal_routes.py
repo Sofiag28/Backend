@@ -30,8 +30,8 @@ def crear_personal():
     db.commit()
     return jsonify({"mensaje": "Personal registrado correctamente"}), 201
 
-# ACTUALIZAR un miembro del personal
-@personal_bp.route("/actualizar<int:id>", methods=["PUT"])
+# 🚨 Aquí faltaban las barras antes del parámetro <id>
+@personal_bp.route("/actualizar/<int:id>", methods=["PUT"])
 def actualizar_personal(id):
     data = request.json
     db = current_app.config['DB_CONNECTION']
@@ -50,8 +50,8 @@ def actualizar_personal(id):
     db.commit()
     return jsonify({"mensaje": "Personal actualizado correctamente"}), 200
 
-# ELIMINAR un miembro del personal
-@personal_bp.route("/eliminar<int:id>", methods=["DELETE"])
+# 🚨 Aquí igual: faltaba la barra antes de <id>
+@personal_bp.route("/eliminar/<int:id>", methods=["DELETE"])
 def eliminar_personal(id):
     db = current_app.config['DB_CONNECTION']
     cursor = db.cursor()

@@ -1,21 +1,8 @@
-from flask import Blueprint, jsonify, request, current_app
-from config import get_db_connection, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
+from flask import Blueprint, jsonify, request
+from config import get_db_connection
 import pymysql
+
 admin_bp = Blueprint("admin", __name__)
-
-# ===========================
-# 🔹 Conexión a la base de datos
-# ===========================
-def get_db_connection():
-    conf = current_app.config["DB_CONNECTION_CONFIG"]
-    return pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME,
-        port=DB_PORT
-    )
-
 
 # ===========================
 # 🔹 Listar usuarios
@@ -23,7 +10,7 @@ def get_db_connection():
 @admin_bp.route("/usuarios", methods=["GET"])
 def listar_usuarios():
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     query = """
         SELECT id, nombre, apellido, email, rol, id_curso 
@@ -38,6 +25,7 @@ def listar_usuarios():
     cursor.close()
     conn.close()
     return jsonify(usuarios), 200
+
 
 # ===========================
 # 🔹 Crear usuario
@@ -60,7 +48,6 @@ def crear_usuario():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Dependiendo del rol, se inserta en la tabla correspondiente
         if rol.lower() == "estudiante":
             query = """
                 INSERT INTO estudiantes (nombre, apellido, email, password, rol, genero, id_curso)
@@ -84,6 +71,7 @@ def crear_usuario():
         print("Error al crear usuario:", e)
         return jsonify({"error": str(e)}), 500
 
+
 # ===========================
 # 🔹 Editar usuario
 # ===========================
@@ -101,7 +89,7 @@ def editar_usuario(id):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Verificamos si es estudiante o personal
+        # Verificar si el usuario es estudiante
         cursor.execute("SELECT id FROM estudiantes WHERE id = %s", (id,))
         es_estudiante = cursor.fetchone()
 
@@ -123,11 +111,13 @@ def editar_usuario(id):
         conn.commit()
         cursor.close()
         conn.close()
+
         return jsonify({"mensaje": "Usuario actualizado correctamente"}), 200
 
     except Exception as e:
         print("Error al editar usuario:", e)
         return jsonify({"error": str(e)}), 500
+
 
 # ===========================
 # 🔹 Eliminar usuario
@@ -146,9 +136,11 @@ def eliminar_usuario(id):
         conn.close()
 
         return jsonify({"mensaje": "Usuario eliminado correctamente"}), 200
+
     except Exception as e:
         print("Error al eliminar usuario:", e)
         return jsonify({"error": str(e)}), 500
+
 
 # ===========================
 # 🔹 Estadísticas generales
@@ -156,7 +148,7 @@ def eliminar_usuario(id):
 @admin_bp.route("/estadisticas", methods=["GET"])
 def estadisticas():
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     cursor.execute("SELECT COUNT(*) as total FROM estudiantes")
     total_estudiantes = cursor.fetchone()["total"]

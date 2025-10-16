@@ -4,17 +4,22 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 from config import get_db_connection
+import pymysql
 
 
 def crear_token(usuario, secret_key, horas=24):
+    """🔹 Genera un token JWT con expiración por defecto de 24 horas"""
     payload = {
         "usuario": usuario,
         "exp": datetime.utcnow() + timedelta(hours=horas)
     }
     return jwt.encode(payload, secret_key, algorithm="HS256")
 
+
 def login_usuario(email, password, db):
-    cursor = db.cursor(dictionary=True)
+    """🔹 Verifica las credenciales del usuario (estudiante o personal) y devuelve el token"""
+    # Crear cursor compatible con PyMySQL
+    cursor = db.cursor(pymysql.cursors.DictCursor)
 
     # 1️⃣ Buscar en estudiantes
     cursor.execute("SELECT * FROM estudiantes WHERE email=%s", (email,))
@@ -28,16 +33,19 @@ def login_usuario(email, password, db):
         tipo = "personal"
 
     if not usuario:
+        cursor.close()
         return None, "Usuario no encontrado"
 
     # 3️⃣ Verificar contraseña
     if tipo == "estudiante":
-        # Usuarios estudiantes usan werkzeug
+        # Estudiantes → werkzeug hash
         if not check_password_hash(usuario["password"], password):
+            cursor.close()
             return None, "Contraseña incorrecta"
     else:
-        # Usuarios personal usan bcrypt
-        if not bcrypt.checkpw(password.encode('utf-8'), usuario["password"].encode('utf-8')):
+        # Personal → bcrypt
+        if not bcrypt.checkpw(password.encode("utf-8"), usuario["password"].encode("utf-8")):
+            cursor.close()
             return None, "Contraseña incorrecta"
 
     # 4️⃣ Crear token JWT
@@ -45,10 +53,10 @@ def login_usuario(email, password, db):
         {
             "id": usuario["id"],
             "email": usuario["email"],
-            "rol": usuario.get("rol", "estudiante")
+            "rol": usuario.get("rol", tipo)
         },
         current_app.config["SECRET_KEY"]
     )
 
     cursor.close()
-    return token, usuario.get("rol"), usuario.get("id_curso", None), usuario["id"], usuario["nombre"]
+    return token, usuario.get("rol"), usuario.get("id_curso"), usuario["id"], usuario["nombre"]
