@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_mail import Mail
 from itsdangerous import URLSafeTimedSerializer
 from Controllers.integracion_controller import integracion_bp
-from config import get_db_connection, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
+from config import get_db_connection, DB_HOST, SSL_CA, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
 
 
 app = Flask(__name__)
@@ -17,8 +17,10 @@ app.config['DB_CONNECTION_CONFIG'] = {
     'user': DB_USER,
     'password': DB_PASSWORD,
     'database': DB_NAME,
-    'port':DB_PORT
+    'port': DB_PORT,
+    'ssl': {'ca': SSL_CA}  # SSL obligatorio para Aiven
 }
+
 
 # ✅ Creamos y guardamos la conexión global
 app.config["DB_CONNECTION"] = get_db_connection()
