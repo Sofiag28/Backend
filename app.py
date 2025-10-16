@@ -37,7 +37,7 @@ app.config['MAIL_DEFAULT_SENDER'] = ('Ingeniera - Laura', 'laurasofiag1012@gmail
 # ===========================
 # 🔹 Inicializar extensiones
 # ===========================
-CORS(app, resources={r"/*": {"origins": "https://fronted-dz2q.onrender.com"}})
+CORS(app, origins=["https://fronted-dz2q.onrender.com"])
 mail = Mail(app)
 serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
