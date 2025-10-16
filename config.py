@@ -12,6 +12,8 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 SSL_CA = "ca-certificate.crt"  # Ruta al certificado CA
 
+SSL_CA = "/etc/secrets/ca-certificate.crt"
+
 def get_db_connection():
     return pymysql.connect(
         host=DB_HOST,
