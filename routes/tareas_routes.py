@@ -198,7 +198,6 @@ def crear_tarea():
         data = request.get_json()
         titulo = data.get("titulo")
         descripcion = data.get("descripcion")
-        estado = data.get("estado", "Pendiente")
         id_curso = data.get("id_curso")
         fecha_entrega = data.get("fecha_entrega")
 
@@ -206,18 +205,16 @@ def crear_tarea():
         if not titulo or not descripcion or not fecha_entrega or not id_curso:
             return jsonify({"error": "Faltan campos obligatorios"}), 400
 
-        # 🔹 Si solo llega la fecha (sin hora), añadimos hora por defecto
-        if len(fecha_entrega) == 10:  # Formato YYYY-MM-DD
-            fecha_entrega += " 00:00:00"
+        
 
         # 🔹 Conexión a la base de datos
         conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO tareas (titulo, descripcion, fecha_entrega, id_curso, estado)
+            INSERT INTO tareas (titulo, descripcion, fecha_entrega, estado, id_curso)
             VALUES (%s, %s, %s, %s, %s)
-        """, (titulo, descripcion, fecha_entrega, id_curso, estado))
+        """, (titulo, descripcion, fecha_entrega, id_curso))
         conn.commit()
 
         nueva_tarea_id = cursor.lastrowid
