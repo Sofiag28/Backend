@@ -244,8 +244,8 @@ def editar_tarea(id):
         titulo = data.get("titulo")
         descripcion = data.get("descripcion")
         fecha_entrega = data.get("fecha_entrega")
-        id_curso = data.get("id_curso")
         estado = data.get("estado", "pendiente")
+        id_curso = data.get("id_curso")
 
         if not titulo or not descripcion or not fecha_entrega or not id_curso:
             return jsonify({"error": "Faltan campos"}), 400
