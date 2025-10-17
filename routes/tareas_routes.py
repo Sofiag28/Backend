@@ -234,17 +234,23 @@ def editar_tarea(id):
         titulo = data.get("titulo")
         descripcion = data.get("descripcion")
         fecha_entrega = data.get("fecha_entrega")
+        id_curso = data.get("id_curso")
+        estado = data.get("estado", "pendiente")
 
-        if not titulo or not descripcion or not fecha_entrega:
+        if not titulo or not descripcion or not fecha_entrega or not id_curso:
             return jsonify({"error": "Faltan campos"}), 400
 
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE tareas
-            SET titulo = %s, descripcion = %s, fecha_entrega = %s
+            SET titulo = %s,
+                descripcion = %s,
+                fecha_entrega = %s,
+                id_curso = %s,
+                estado = %s
             WHERE id = %s
-        """, (titulo, descripcion, fecha_entrega, id))
+        """, (titulo, descripcion, fecha_entrega, id_curso, estado, id))
         conn.commit()
         cursor.close()
         conn.close()
@@ -254,7 +260,6 @@ def editar_tarea(id):
     except Exception as e:
         print("Error al editar tarea:", e)
         return jsonify({"error": str(e)}), 500
-
 
 # ===========================
 # 🔹 Eliminar tarea
