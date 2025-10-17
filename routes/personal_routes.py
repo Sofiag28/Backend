@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify, current_app
-
 personal_bp = Blueprint("personal", __name__, url_prefix="/personal")
 
 # LISTAR todo el personal

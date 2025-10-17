@@ -198,32 +198,42 @@ def crear_tarea():
         data = request.get_json()
         titulo = data.get("titulo")
         descripcion = data.get("descripcion")
+        estado = data.get("estado", "Pendiente")
         id_curso = data.get("id_curso")
         fecha_entrega = data.get("fecha_entrega")
 
+        # 🔹 Validación de campos obligatorios
         if not titulo or not descripcion or not fecha_entrega or not id_curso:
             return jsonify({"error": "Faltan campos obligatorios"}), 400
 
+        # 🔹 Si solo llega la fecha (sin hora), añadimos hora por defecto
+        if len(fecha_entrega) == 10:  # Formato YYYY-MM-DD
+            fecha_entrega += " 00:00:00"
+
+        # 🔹 Conexión a la base de datos
         conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
             INSERT INTO tareas (titulo, descripcion, fecha_entrega, id_curso, estado)
             VALUES (%s, %s, %s, %s, %s)
-        """, (titulo, descripcion, fecha_entrega, id_curso, "pendiente"))
+        """, (titulo, descripcion, fecha_entrega, id_curso, estado))
         conn.commit()
 
         nueva_tarea_id = cursor.lastrowid
+
+        # 🔹 Obtener la tarea recién creada para devolverla al frontend
+        cursor.execute("SELECT * FROM tareas WHERE id = %s", (nueva_tarea_id,))
+        nueva_tarea = cursor.fetchone()
+
         cursor.close()
         conn.close()
 
-        return jsonify({"id": nueva_tarea_id, "mensaje": "Tarea creada correctamente"}), 201
+        return jsonify(nueva_tarea), 201
 
     except Exception as e:
         print("Error al crear tarea:", e)
         return jsonify({"error": str(e)}), 500
-
-
 # ===========================
 # 🔹 Editar tarea
 # ===========================
@@ -242,6 +252,7 @@ def editar_tarea(id):
 
         conn = get_db_connection()
         cursor = conn.cursor()
+
         cursor.execute("""
             UPDATE tareas
             SET titulo = %s,
@@ -252,15 +263,19 @@ def editar_tarea(id):
             WHERE id = %s
         """, (titulo, descripcion, fecha_entrega, id_curso, estado, id))
         conn.commit()
+
+        # 🔹 Obtener la tarea actualizada
+        cursor.execute("SELECT * FROM tareas WHERE id = %s", (id,))
+        tarea_actualizada = cursor.fetchone()
+
         cursor.close()
         conn.close()
 
-        return jsonify({"mensaje": "Tarea actualizada correctamente"}), 200
+        return jsonify(tarea_actualizada), 200
 
     except Exception as e:
         print("Error al editar tarea:", e)
         return jsonify({"error": str(e)}), 500
-
 # ===========================
 # 🔹 Eliminar tarea
 # ===========================
